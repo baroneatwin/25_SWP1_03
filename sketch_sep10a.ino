@@ -39,6 +39,7 @@ void setup() {
   pinMode(PIN_TRIG, OUTPUT);
   pinMode(PIN_ECHO, INPUT);
   digitalWrite(PIN_TRIG, LOW);
+  digitalWrite(PIN_LED, HIGH); // LED OFF initially (active-low)
 
   myservo.attach(PIN_SERVO);
   myservo.writeMicroseconds(DUTY_MIN);
@@ -76,6 +77,13 @@ void loop() {
 
   // EMA filter
   distance_ema = EMA_ALPHA * distance_prev + (1 - EMA_ALPHA) * distance_ema;
+
+  // 🔹 LED control (only ON when 180~360 mm)
+  if (distance_ema >= 180.0 && distance_ema <= 360.0) {
+    digitalWrite(PIN_LED, LOW);   // LED ON (active-low)
+  } else {
+    digitalWrite(PIN_LED, HIGH);  // LED OFF
+  }
 
   // Serial output
   Serial.print("Min:");    Serial.print(DIST_MIN);
